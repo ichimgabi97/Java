@@ -1,11 +1,7 @@
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -23,7 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.scene.input.MouseEvent;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -42,7 +38,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Lab6");
 
         //Configuration panel
@@ -62,16 +58,17 @@ public class Main extends Application {
         HBox hbColor = new HBox();
         hbColor.getChildren().addAll(labelColor, cbColor);
         hbColor.setSpacing(10);
-        cbColor.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                if (t1.toString().equals("Red")){
+        cbColor.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
+            switch (t1) {
+                case "Red":
                     color = "Red";
-                }else if (t1.toString().equals("Green")){
+                    break;
+                case "Green":
                     color = "Green";
-                }else if (t1.toString().equals("Black")){
+                    break;
+                case "Black":
                     color = "Black";
-                }
+                    break;
             }
         });
 
@@ -82,16 +79,17 @@ public class Main extends Application {
         HBox hbShape = new HBox();
         hbColor.getChildren().addAll(labelShape, cbShape);
         hbColor.setSpacing(10);
-        cbShape.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                if (t1.toString().equals("Square")){
+        cbShape.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
+            switch (t1) {
+                case "Square":
                     shape = "Square";
-                }else if (t1.toString().equals("Circle")){
+                    break;
+                case "Circle":
                     shape = "Circle";
-                }else if (t1.toString().equals("Triangle")){
+                    break;
+                case "Triangle":
                     shape = "Triangle";
-                }
+                    break;
             }
         });
 
@@ -107,43 +105,40 @@ public class Main extends Application {
         final Canvas layer = new Canvas(900,400);
         GraphicsContext gc = layer.getGraphicsContext2D();
 
-        layer.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (e.getClickCount() > 0){
-                    if (!delete){
-                        switch (color) {
-                            case "Red":
-                                gc.setFill(Color.RED);
-                                break;
-                            case "Green":
-                                gc.setFill(Color.GREEN);
-                                break;
-                            case "Black":
-                                gc.setFill(Color.BLACK);
-                                break;
-                        }
-                        size = textFieldSize.getText();
-                        //Drawing on canvas
-                        switch (shape){
-                            case "Square":
-                                gc.fillRoundRect(e.getX() - Integer.parseInt(size) / 2, e.getY() - Integer.parseInt(size) / 2, Integer.parseInt(size), Integer.parseInt(size), 10, 10);
-                                break;
-                            case "Circle":
-                                gc.fillOval(e.getX() - Integer.parseInt(size) / 2, e.getY() - Integer.parseInt(size) / 2, Integer.parseInt(size), Integer.parseInt(size));
-                                break;
-                            case "Triangle":
-                                //Mai e de lucrat :)))
-                                gc.fillPolygon(new double[]{e.getX(), e.getX() - Integer.parseInt(size), e.getX() + Integer.parseInt(size)},
-                                               new double[]{e.getY() - Integer.parseInt(size) / 2, e.getY() + Integer.parseInt(size) / 2, e.getY() + Integer.parseInt(size) / 2},3);
-                        }
-                    }else{
-                        //Erasing from canvas
-                        size = textFieldSize.getText();
-                        gc.clearRect(e.getX() - Integer.parseInt(size) / 2,e.getY() - Integer.parseInt(size) / 2, Integer.parseInt(size), Integer.parseInt(size));
+        layer.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+            if (e.getClickCount() > 0) {
+                if (!delete) {
+                    switch (color) {
+                        case "Red":
+                            gc.setFill(Color.RED);
+                            break;
+                        case "Green":
+                            gc.setFill(Color.GREEN);
+                            break;
+                        case "Black":
+                            gc.setFill(Color.BLACK);
+                            break;
                     }
-
+                    size = textFieldSize.getText();
+                    //Drawing on canvas
+                    switch (shape) {
+                        case "Square":
+                            gc.fillRoundRect(e.getX() - Float.parseFloat(size) / 2, e.getY() - Float.parseFloat(size) / 2, Integer.parseInt(size), Integer.parseInt(size), 10, 10);
+                            break;
+                        case "Circle":
+                            gc.fillOval(e.getX() - Float.parseFloat(size) / 2, e.getY() - Float.parseFloat(size) / 2, Integer.parseInt(size), Integer.parseInt(size));
+                            break;
+                        case "Triangle":
+                            //Mai e de lucrat :)))
+                            gc.fillPolygon(new double[]{e.getX(), e.getX() - Integer.parseInt(size), e.getX() + Integer.parseInt(size)},
+                                    new double[]{e.getY() - Float.parseFloat(size) / 2, e.getY() + Float.parseFloat(size) / 2, e.getY() + Float.parseFloat(size) / 2}, 3);
+                    }
+                } else {
+                    //Erasing from canvas
+                    size = textFieldSize.getText();
+                    gc.clearRect(e.getX() - Float.parseFloat(size) / 2, e.getY() - Float.parseFloat(size) / 2, Integer.parseInt(size), Integer.parseInt(size));
                 }
+
             }
         });
 
@@ -167,60 +162,35 @@ public class Main extends Application {
         Button buttonDelete = new Button();
         buttonDelete.setText("Delete");
 
-        buttonReset.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                gc.clearRect(0,0, layer.getWidth(), layer.getHeight());
-            }
-        });
+        buttonReset.setOnAction(actionEvent -> gc.clearRect(0, 0, layer.getWidth(), layer.getHeight()));
 
-        buttonExit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                Platform.exit();
-            }
-        });
+        buttonExit.setOnAction(actionEvent -> Platform.exit());
 
-        buttonSave.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save Image");
-                File file = fileChooser.showSaveDialog(primaryStage);
-                WritableImage writableImage = new WritableImage((int) layer.getWidth(), (int) layer.getHeight());
-                WritableImage snapshot = layer.snapshot(new SnapshotParameters(), writableImage);
-                if (file != null){
-                    try{
-                        ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        buttonSave.setOnAction(actionEvent -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Image");
+            File file = fileChooser.showSaveDialog(primaryStage);
+            WritableImage writableImage = new WritableImage((int) layer.getWidth(), (int) layer.getHeight());
+            WritableImage snapshot = layer.snapshot(new SnapshotParameters(), writableImage);
+            if (file != null) {
+                try {
+                    ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
 
-        buttonLoad.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Load Image");
-                File file = fileChooser.showOpenDialog(primaryStage);
-                Image img = new Image(file.toURI().toString(), layer.getWidth(), layer.getHeight(), false, false);
-                gc.clearRect(0,0, layer.getWidth(), layer.getHeight());
-                gc.drawImage(img, 0, 0);
-            }
+        buttonLoad.setOnAction(actionEvent -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Load Image");
+            File file = fileChooser.showOpenDialog(primaryStage);
+            Image img = new Image(file.toURI().toString(), layer.getWidth(), layer.getHeight(), false, false);
+            gc.clearRect(0, 0, layer.getWidth(), layer.getHeight());
+            gc.drawImage(img, 0, 0);
         });
 
-        buttonDelete.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if (!delete){
-                    delete = true;
-                }else{
-                    delete = false;
-                }
-            }
-        });
+        buttonDelete.setOnAction(actionEvent -> delete = !delete);
 
         HBox hbButton = new HBox();
         hbButton.getChildren().addAll(buttonReset, buttonSave, buttonLoad, buttonExit, buttonDelete);
