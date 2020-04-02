@@ -10,6 +10,11 @@ public class Board {
     int maxValueForAToken;
     int winningLengthList;
     boolean finish = false;
+    boolean hasPlayerWon = false;
+
+    public void setHasPlayerWon(boolean hasPlayerWon) {
+        this.hasPlayerWon = hasPlayerWon;
+    }
 
     public void setFinish(boolean finish) {
         this.finish = finish;
@@ -72,5 +77,9 @@ public class Board {
 
     public int getWinningLengthList() {
         return winningLengthList;
+    }
+
+    public int getNumberOfTokens() {
+        return numberOfTokens;
     }
 }
